@@ -30,6 +30,7 @@ namespace F3\InterfaceChecker\Controller;
  */
 class StandardController extends \F3\FLOW3\MVC\Controller\ActionController {
 
+
 	/**
 	 * @var \F3\FLOW3\Object\ObjectFactoryInterface
 	 * @inject
@@ -54,8 +55,8 @@ class StandardController extends \F3\FLOW3\MVC\Controller\ActionController {
 	 * @return void
 	 */
 	public function checkPackageAction($packagePath) {
-		
-		echo '<h3>Checked Packages/' . $packagePath . '</h3>';
+		$interfacesMissingMethods = array();
+		$validPackage = true;
 		
 		$packageParts = explode('/', $packagePath);
 		
@@ -64,34 +65,24 @@ class StandardController extends \F3\FLOW3\MVC\Controller\ActionController {
 				$package = $this->objectFactory->create('F3\FLOW3\Package\Package', $packageParts[1], FLOW3_PATH_PACKAGES . $packagePath . '/');
 				$classFiles = $package->getClassFiles();
 
-				$interfacesMissingMethods = array();
 				foreach ($classFiles as $className => $classFile) {
 					$temp = $this->getInterfacesWithMissingMethodsFromClassName($className);
 					if (count($temp)) {
 						$interfacesMissingMethods[] = $temp;
 					}
-				}
-				
-				if (count($interfacesMissingMethods)) {
-					echo '<pre>';
-					var_dump($interfacesMissingMethods);
-					echo '</pre>';
-				}
-				else {
-					echo 'All public methods defined by the interfaces.';
-				}
-				
-				
+				}			
 			}
 			catch (\Exception $error) {
-				echo 'No valid package specified';
-			}
-			
+				$validPackage = false;
+			}			
 		}
 		else {
-			echo 'No valid package specified';
+			$validPackage = false;
 		}
-		
+	
+		$this->view->assign('validPackage', $validPackage);
+		$this->view->assign('packagePath', $packagePath);
+		$this->view->assign('interfacesMissingMethods', $interfacesMissingMethods);
 	}
 	
 	
@@ -102,19 +93,22 @@ class StandardController extends \F3\FLOW3\MVC\Controller\ActionController {
 	 * @return void
 	 */
 	public function checkClassAction($className) {
+		$validClass = true;
+		$interfacesMissingMethods = array();
 		
-		echo '<h3>Checked ' . $className . '</h3>';
-			
-		$interfacesMissingMethods = $this->getInterfacesWithMissingMethodsFromClassName($className);
-		
-		if (count($interfacesMissingMethods)) {
-			echo '<pre>';
-			var_dump($interfacesMissingMethods);
-			echo '</pre>';
+		if (class_exists($className)) {
+			$temp = $this->getInterfacesWithMissingMethodsFromClassName($className);
+			if (count($temp)) {
+				$interfacesMissingMethods[] = $temp;
+			}
 		}
 		else {
-			echo 'All public methods defined by the interfaces.';
+			$validClass = false;
 		}
+		
+		$this->view->assign('validClass', $validClass);
+		$this->view->assign('className', $className);
+		$this->view->assign('interfacesMissingMethods', $interfacesMissingMethods);
 	}
 	
 	

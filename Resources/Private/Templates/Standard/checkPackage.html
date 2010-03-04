@@ -8,6 +8,16 @@
 		<title>Interface Checker</title>
 	</head>
 	<body>
+		<h1>Interface Checker</h1>
+		<h3>Checked Packages/{packagePath}</h3>
+		<f:if condition="{validPackage}">
+			<f:then>
+				<f:render partial="/resultTable" arguments="{interfacesMissingMethods: interfacesMissingMethods}" />
+			</f:then>
+			<f:else>
+				This is not a valid package.
+			</f:else>
+		</f:if>	
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
 		<h3>Check next</h3>
