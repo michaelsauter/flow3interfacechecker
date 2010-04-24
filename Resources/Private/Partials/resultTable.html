@@ -1,0 +1,25 @@
+<f:if condition="{interfacesMissingMethods}">
+	<f:then>
+		<table border="1" cellspacing="5" cellpadding="5">
+			<tr><th>checked interfaces</th><th>possibly missing methods</th><th>defined in class</th></tr>
+			<f:for each="{interfacesMissingMethods}" as="interfacesMissingMethod">
+				<tr>
+					<td valign="top">
+						<f:for each="{interfacesMissingMethod.checkedInterfaces}" as="interfaceName">
+							{interfaceName}<br />
+						</f:for>
+					</td>
+					<td valign="top">
+						<f:for each="{interfacesMissingMethod.possiblyMissing}" as="methodName">
+							{methodName}<br />
+						</f:for>
+					</td>
+					<td valign="top">{interfacesMissingMethod.methodsDefinedInClass}</td>
+				</tr>
+			</f:for>
+		</table>
+	</f:then>
+	<f:else>
+		All public methods defined by the interfaces.
+	</f:else>
+</f:if>
